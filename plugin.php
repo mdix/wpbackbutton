@@ -52,20 +52,20 @@ class WP_back_button {
             if ($homeURL == $currentURL) {
                 array_push($this->savedURLs, $homeURL);
                 setcookie('wpbackbutton', serialize($this->savedURLs));
-                return false;
+                return;
             }
 
             array_push($this->savedURLs, $homeURL);
             array_push($this->savedURLs, $this->getCurrentURL());
             setcookie('wpbackbutton', serialize($this->savedURLs));
-            return $this->getSecondToTheLastSavedURL();
+            return;
         }
 
         // navigated to the start - remove all urls: "restart" - no back button
         if ($homeURL == $currentURL) {
             array_push($this->savedURLs, $homeURL);
             setcookie('wpbackbutton', serialize($this->savedURLs));
-            return false;
+            return;
         }
 
         $this->savedURLs = unserialize(stripslashes(urldecode($_COOKIE['wpbackbutton'])));
@@ -73,14 +73,14 @@ class WP_back_button {
         if ($this->getSecondToTheLastSavedURL() == $this->getCurrentURL()) {
             array_pop($this->savedURLs);
             setcookie('wpbackbutton', serialize($this->savedURLs));
-            return $this->getSecondToTheLastSavedURL();
+            return;
         }
 
         // new page has been entered
         if ($this->getLastURL() != $this->getCurrentURL()) {
             array_push($this->savedURLs, $this->getCurrentURL());
             setcookie('wpbackbutton', serialize($this->savedURLs));
-            return $this->getSecondToTheLastSavedURL();
+            return;
         }
     }
 
