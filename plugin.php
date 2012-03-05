@@ -38,8 +38,6 @@ class WP_back_button {
 
         // Init
         add_action( 'init', array( $this, 'pushUrlToStack' ) );
-        // Filters & actions
-        add_action( 'shutdown', array( $this, 'storeCurrentPage' ) );
 
     } // end constructor
 
@@ -57,33 +55,30 @@ class WP_back_button {
 
             array_push($this->savedURLs, $this->getCurrentURL());
             setcookie('wpbackbutton', serialize($this->savedURLs));
-            return;
+            return $this->getSecondToTheLastSavedURL();
         }
 
-        // navigated to the start - remove all urls: "restart"
+        // navigated to the start - remove all urls: "restart" - no back button
         if ($homeURL == $currentURL) {
             array_push($this->savedURLs, $homeURL);
             setcookie('wpbackbutton', serialize($this->savedURLs));
-            return;
+            return false;
         }
 
         $this->savedURLs = unserialize(stripslashes(urldecode($_COOKIE['wpbackbutton'])));
-
         // back button has been used
         if ($this->getSecondToTheLastSavedURL() == $this->getCurrentURL()) {
             array_pop($this->savedURLs);
             array_pop($this->savedURLs);
             setcookie('wpbackbutton', serialize($this->savedURLs));
-            return;
-            // return the last popped elem as back button source
+            return $this->getLastURL();
         }
 
         // new page has been entered
-        if ($this->getLastSavedURL() != $this->getCurrentURL()) {
+        if ($this->getLastURL() != $this->getCurrentURL()) {
             array_push($this->savedURLs, $this->getCurrentURL());
             setcookie('wpbackbutton', serialize($this->savedURLs));
-            return;
-            // return $this->getSecondToTheLastSavedURL() as back button source
+            return $this->getSecondToTheLastSavedURL();
         }
     }
 
@@ -91,7 +86,7 @@ class WP_back_button {
         if (!isset($_SERVER['REQUEST_URI'])){
             $serverrequri = $_SERVER['PHP_SELF'];
         } else {
-            $serverrequri =    $_SERVER['REQUEST_URI'];
+            $serverrequri = $_SERVER['REQUEST_URI'];
         }
         $s = empty($_SERVER["HTTPS"]) ? '' : ($_SERVER["HTTPS"] == "on") ? "s" : "";
         $protocol = $this->strleft(strtolower($_SERVER["SERVER_PROTOCOL"]), "/") . $s;
@@ -107,17 +102,13 @@ class WP_back_button {
         return !isset($_COOKIE['wpbackbutton']);
     }
 
-    private function getLastSavedURL() {
+    private function getLastURL() {
         return end($this->savedURLs);
     }
 
     private function getSecondToTheLastSavedURL() {
         end($this->savedURLs);
         return prev($this->savedURLs);
-    }
-
-    function storeCurrentPage() {
-        var_dump($this->savedURLs);
     }
 
     /**
