@@ -3,7 +3,7 @@
 Plugin Name: wpbackbutton
 Plugin URI: http://no-plugin-site-available
 Description: Enables a back button that reverse engineers the users navigation to enable a simple "back" button on every page.
-Version: 0.1
+Version: 0.2
 Author: Marc Dix
 Author URI: http://www.dixpix.de
 Author Email: marcdix@marcdix.de

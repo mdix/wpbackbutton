@@ -4,7 +4,7 @@ Donate link: http://no-donate-link
 Tags: navigation
 Requires at least: 3.3.1
 Tested up to: 3.3.1
-Stable tag: 0.1
+Stable tag: 0.2
 
 Enables a back button that reverse engineers the users navigation to enable a simple "back" button on every page.
 
@@ -32,6 +32,9 @@ I suppose that it's no good idea to add the button into a loop, because you'd ha
 == Screenshots ==
 
 == Changelog ==
+
+= 0.2 =
+first working, but untested version
 
 = 0.1 =
 Initial creation.
