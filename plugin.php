@@ -30,7 +30,7 @@ class WP_back_button {
 
         // Define constants used throughout the plugin
         $this->init_plugin_constants();
-
+        $this->init_shortcodes();
         load_plugin_textdomain( PLUGIN_LOCALE, false, dirname( plugin_basename( __FILE__ ) ) . '/lang' );
 
         // Load JavaScript and stylesheets
@@ -58,7 +58,6 @@ class WP_back_button {
             array_push($this->savedURLs, $homeURL);
             array_push($this->savedURLs, $this->getCurrentURL());
             setcookie('wpbackbutton', serialize($this->savedURLs));
-            echo '<a href=' . $this->getSecondToTheLastSavedURL() . '>B A C K</a>';
             return $this->getSecondToTheLastSavedURL();
         }
 
@@ -74,7 +73,6 @@ class WP_back_button {
         if ($this->getSecondToTheLastSavedURL() == $this->getCurrentURL()) {
             array_pop($this->savedURLs);
             setcookie('wpbackbutton', serialize($this->savedURLs));
-            echo '<a href=' . $this->getSecondToTheLastSavedURL() . '>B A C K</a>';
             return $this->getSecondToTheLastSavedURL();
         }
 
@@ -82,7 +80,6 @@ class WP_back_button {
         if ($this->getLastURL() != $this->getCurrentURL()) {
             array_push($this->savedURLs, $this->getCurrentURL());
             setcookie('wpbackbutton', serialize($this->savedURLs));
-            echo '<a href=' . $this->getSecondToTheLastSavedURL() . '>B A C K</a>';
             return $this->getSecondToTheLastSavedURL();
         }
     }
@@ -155,6 +152,23 @@ class WP_back_button {
 
 
     } // end init_plugin_constants
+
+    /**
+     * Add a shortcode to be able to get button source via do_shortcode in the template
+     */
+    function init_shortcodes() {
+        add_shortcode('renderBackButton', array($this, 'wpbackbutton_shortcode'));
+    }
+
+    /**
+     * Returns nothing if no backbutton needed, else the backbutton
+     */
+    function wpbackbutton_shortcode() {
+        if ($this->getSecondToTheLastSavedURL()) {
+            return '<a class="wpbackbutton" href="' . $this->getSecondToTheLastSavedURL() . '">BACK</a>';
+        }
+        return;
+    }
 
     /**
      * Registers and enqueues stylesheets for the administration panel and the
