@@ -37,14 +37,14 @@ class WP_back_button {
         $this->register_scripts_and_styles();
 
         // Init
-        add_action( 'init', array( $this, 'pushUrlToStack' ) );
+        add_action( 'init', array( $this, 'addAndRemoveURLs') );
 
     } // end constructor
 
     /*--------------------------------------------*
      * Core Functions
      *---------------------------------------------*/
-    function pushUrlToStack() {
+    function addAndRemoveURLs() {
         $homeURL = home_url() . '/';
         $currentURL = $this->getCurrentURL();
 
