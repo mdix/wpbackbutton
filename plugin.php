@@ -18,6 +18,7 @@ class WP_back_button {
 
     const slug = 'wpbackbutton';
 
+    private $savedURLs = array();
     /*--------------------------------------------*
      * Constructor
      *--------------------------------------------*/
@@ -35,17 +36,88 @@ class WP_back_button {
         // Load JavaScript and stylesheets
         $this->register_scripts_and_styles();
 
+        // Init
+        add_action( 'init', array( $this, 'pushUrlToStack' ) );
         // Filters & actions
         add_action( 'shutdown', array( $this, 'storeCurrentPage' ) );
-        add_filter( 'TODO', array( $this, 'filter_method_name' ) );
 
     } // end constructor
 
     /*--------------------------------------------*
      * Core Functions
      *---------------------------------------------*/
+    function pushUrlToStack() {
+        $homeURL = home_url() . '/';
+        $currentURL = $this->getCurrentURL();
+
+        if ($this->cookieDoesntExist()) {
+            if ($homeURL !== $currentURL) {
+                array_push($this->savedURLs, $homeURL);
+            }
+
+            array_push($this->savedURLs, $this->getCurrentURL());
+            setcookie('wpbackbutton', serialize($this->savedURLs));
+            return;
+        }
+
+        // navigated to the start - remove all urls: "restart"
+        if ($homeURL == $currentURL) {
+            array_push($this->savedURLs, $homeURL);
+            setcookie('wpbackbutton', serialize($this->savedURLs));
+            return;
+        }
+
+        $this->savedURLs = unserialize(stripslashes(urldecode($_COOKIE['wpbackbutton'])));
+
+        // back button has been used
+        if ($this->getSecondToTheLastSavedURL() == $this->getCurrentURL()) {
+            array_pop($this->savedURLs);
+            array_pop($this->savedURLs);
+            setcookie('wpbackbutton', serialize($this->savedURLs));
+            return;
+            // return the last popped elem as back button source
+        }
+
+        // new page has been entered
+        if ($this->getLastSavedURL() != $this->getCurrentURL()) {
+            array_push($this->savedURLs, $this->getCurrentURL());
+            setcookie('wpbackbutton', serialize($this->savedURLs));
+            return;
+            // return $this->getSecondToTheLastSavedURL() as back button source
+        }
+    }
+
+    private function getCurrentURL() {
+        if (!isset($_SERVER['REQUEST_URI'])){
+            $serverrequri = $_SERVER['PHP_SELF'];
+        } else {
+            $serverrequri =    $_SERVER['REQUEST_URI'];
+        }
+        $s = empty($_SERVER["HTTPS"]) ? '' : ($_SERVER["HTTPS"] == "on") ? "s" : "";
+        $protocol = $this->strleft(strtolower($_SERVER["SERVER_PROTOCOL"]), "/") . $s;
+        $port = ($_SERVER["SERVER_PORT"] == "80") ? "" : (":" . $_SERVER["SERVER_PORT"]);
+        return $protocol . "://" . $_SERVER['SERVER_NAME'] . $port . $serverrequri;
+    }
+
+    private function strleft($s1, $s2) {
+        return substr($s1, 0, strpos($s1, $s2));
+    }
+
+    private function cookieDoesntExist() {
+        return !isset($_COOKIE['wpbackbutton']);
+    }
+
+    private function getLastSavedURL() {
+        return end($this->savedURLs);
+    }
+
+    private function getSecondToTheLastSavedURL() {
+        end($this->savedURLs);
+        return prev($this->savedURLs);
+    }
+
     function storeCurrentPage() {
-        var_dump('loaded');
+        var_dump($this->savedURLs);
     }
 
     /**
@@ -97,6 +169,7 @@ class WP_back_button {
             $this->load_file( self::slug . '-admin-script', '/js/admin.js', true );
             $this->load_file( self::slug . '-admin-style', '/css/admin.css' );
         } else {
+            $this->load_file( self::slug . '-script', '/js/wpbackbutton.js', true);
             $this->load_file( self::slug . '-script', '/js/widget.js', true );
             $this->load_file( self::slug . '-style', '/css/widget.css' );
         } // end if/else
@@ -105,9 +178,9 @@ class WP_back_button {
     /**
      * Helper function for registering and enqueueing scripts and styles.
      *
-     * @name    The     ID to register with WordPress
-     * @file_path        The path to the actual file
-     * @is_script        Optional argument for if the incoming file_path is a JavaScript source file.
+     * @name      The ID to register with WordPress
+     * @file_path The path to the actual file
+     * @is_script Optional argument for if the incoming file_path is a JavaScript source file.
      */
     private function load_file( $name, $file_path, $is_script = false ) {
 
