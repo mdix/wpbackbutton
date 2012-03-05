@@ -49,12 +49,16 @@ class WP_back_button {
         $currentURL = $this->getCurrentURL();
 
         if ($this->cookieDoesntExist()) {
-            if ($homeURL !== $currentURL) {
+            if ($homeURL == $currentURL) {
                 array_push($this->savedURLs, $homeURL);
+                setcookie('wpbackbutton', serialize($this->savedURLs));
+                return false;
             }
 
+            array_push($this->savedURLs, $homeURL);
             array_push($this->savedURLs, $this->getCurrentURL());
             setcookie('wpbackbutton', serialize($this->savedURLs));
+            echo '<a href=' . $this->getSecondToTheLastSavedURL() . '>B A C K</a>';
             return $this->getSecondToTheLastSavedURL();
         }
 
@@ -69,15 +73,16 @@ class WP_back_button {
         // back button has been used
         if ($this->getSecondToTheLastSavedURL() == $this->getCurrentURL()) {
             array_pop($this->savedURLs);
-            array_pop($this->savedURLs);
             setcookie('wpbackbutton', serialize($this->savedURLs));
-            return $this->getLastURL();
+            echo '<a href=' . $this->getSecondToTheLastSavedURL() . '>B A C K</a>';
+            return $this->getSecondToTheLastSavedURL();
         }
 
         // new page has been entered
         if ($this->getLastURL() != $this->getCurrentURL()) {
             array_push($this->savedURLs, $this->getCurrentURL());
             setcookie('wpbackbutton', serialize($this->savedURLs));
+            echo '<a href=' . $this->getSecondToTheLastSavedURL() . '>B A C K</a>';
             return $this->getSecondToTheLastSavedURL();
         }
     }
