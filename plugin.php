@@ -35,18 +35,8 @@ class WP_back_button {
         // Load JavaScript and stylesheets
         $this->register_scripts_and_styles();
 
-        /*
-         * TODO:
-         * Define the custom functionality for your plugin. The first parameter of the
-         * add_action/add_filter calls are the hooks into which your code should fire.
-         *
-         * The second parameter is the function name located within this class. See the stubs
-         * later in the file.
-         *
-         * For more information:
-         * http://codex.wordpress.org/Plugin_API#Hooks.2C_Actions_and_Filters
-         */
-        add_action( 'TODO', array( $this, 'action_method_name' ) );
+        // Filters & actions
+        add_action( 'shutdown', array( $this, 'storeCurrentPage' ) );
         add_filter( 'TODO', array( $this, 'filter_method_name' ) );
 
     } // end constructor
@@ -54,18 +44,9 @@ class WP_back_button {
     /*--------------------------------------------*
      * Core Functions
      *---------------------------------------------*/
-
-    /**
-      * Note:  Actions are points in the execution of a page or process
-     *        lifecycle that WordPress fires.
-     *
-     *          WordPress Actions: http://codex.wordpress.org/Plugin_API#Actions
-     *          Action Reference:  http://codex.wordpress.org/Plugin_API/Action_Reference
-     *
-     */
-    function action_method_name() {
-        // TODO define your action method here
-    } // end action_method_name
+    function storeCurrentPage() {
+        var_dump('loaded');
+    }
 
     /**
      * Note:  Filters are points of execution in which WordPress modifies data
