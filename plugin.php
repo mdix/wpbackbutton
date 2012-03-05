@@ -50,38 +50,54 @@ class WP_back_button {
 
         if ($this->cookieDoesntExist()) {
             if ($homeURL == $currentURL) {
-                array_push($this->savedURLs, $homeURL);
-                setcookie('wpbackbutton', serialize($this->savedURLs));
+                $this->addURLToStack($homeURL);
+                $this->setCookie();
                 return;
             }
 
-            array_push($this->savedURLs, $homeURL);
-            array_push($this->savedURLs, $this->getCurrentURL());
-            setcookie('wpbackbutton', serialize($this->savedURLs));
+            $this->addURLToStack($homeURL);
+            $this->addURLToStack($this->getCurrentURL());
+            $this->setCookie();
             return;
         }
 
         // navigated to the start - remove all urls: "restart" - no back button
         if ($homeURL == $currentURL) {
-            array_push($this->savedURLs, $homeURL);
-            setcookie('wpbackbutton', serialize($this->savedURLs));
+            $this->addURLToStack($homeURL);
+            $this->setCookie();
             return;
         }
 
-        $this->savedURLs = unserialize(stripslashes(urldecode($_COOKIE['wpbackbutton'])));
+        $this->savedURLs = $this->getUnserializedStackFromCookie();
         // back button has been used
         if ($this->getSecondToTheLastSavedURL() == $this->getCurrentURL()) {
-            array_pop($this->savedURLs);
-            setcookie('wpbackbutton', serialize($this->savedURLs));
+            $this->removeLastURLFromStack();
+            $this->setCookie();
             return;
         }
 
         // new page has been entered
         if ($this->getLastURL() != $this->getCurrentURL()) {
-            array_push($this->savedURLs, $this->getCurrentURL());
-            setcookie('wpbackbutton', serialize($this->savedURLs));
+            $this->addURLToStack($this->getCurrentURL());
+            $this->setCookie();
             return;
         }
+    }
+
+    private function setCookie() {
+        setcookie('wpbackbutton', serialize($this->savedURLs));
+    }
+
+    private function addURLToStack($elem) {
+        array_push($this->savedURLs, $elem);
+    }
+
+    private function removeLastURLFromStack() {
+        array_pop($this->savedURLs);
+    }
+
+    private function getUnserializedStackFromCookie() {
+        return unserialize(stripslashes(urldecode($_COOKIE['wpbackbutton'])));
     }
 
     private function getCurrentURL() {
