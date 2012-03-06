@@ -60,7 +60,7 @@ class WP_back_button {
     }
 
     private function writeCookie() {
-        writeCookie('wpbackbutton', serialize($this->savedURLs));
+        setcookie('wpbackbutton', serialize($this->savedURLs));
     }
 
     private function addURLToStack($URL) {
