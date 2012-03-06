@@ -23,7 +23,13 @@ The "Back" button is only displayed if there's a page to navigate back. Because 
 
 = How exactly does wpbackbutton work? =
 
-When a user enters a blog, wpbackbutton sets a cookie with the current URL and (if the current URL is not the frontpage of your blog) the frontpage URL. If the user followed a direct link he'll get redirected to the frontpage when pressing 'Back', because there's no history for that user. When starting with the frontpage and navigating trough the blog, wpbackbutton saves the navigation history. When the "Back" button is clicked, the element that has been viewed just before the current element is loaded. This happens until the user is on the frontpage. Note: It's NOT neccessary to use the "Back" button in order to have a clean history. If the user navigates to page A, then to page B and after that back to page A (with a link, instead of pressing "Back") the history acts as if the user pressed the "Back" button.
+When a user enters a blog, wpbackbutton sets a cookie with the current URL and (if the current URL is not the frontpage of your blog) the frontpage URL. If the user followed a direct link he'll get redirected to the frontpage when pressing 'Back', because there's no history for that user. When starting with the frontpage and navigating trough the blog, wpbackbutton saves the navigation history. When the "Back" button is clicked, the element, that has been viewed just before the current element, is loaded. This happens until the user is on the frontpage. Note: It's NOT neccessary to use the "Back" button in order to have a clean history. If the user navigates to page A, then to page B and after that back to page A (with a link, instead of pressing "Back") the history acts as if the user pressed the "Back" button.
+
+Some navigation cases (different chars are different pages, where A is frontpage):
+A -> B -> C -> D would reverse navigate C -> B -> A
+A -> B -> C -> D -> C would reverse navigate B -> A
+A -> B -> C -> D -> E -> C would reverse navigate E -> D -> C -> B -> A
+A -> B -> C -> D -> A would clear the history (mainpage has no back button)
 
 = Where should I add the Back button? =
 

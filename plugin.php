@@ -20,51 +20,51 @@ class WP_back_button {
     }
 
     function addAndRemoveURLs() {
-        $homeURL    = home_url() . '/';
-        $currentURL = $this->getCurrentURL();
+        $mainpageURL = home_url() . '/';
+        $currentURL  = $this->getCurrentURL();
 
         if ($this->cookieDoesntExist()) {
-            if ($homeURL == $currentURL) {
-                $this->addURLToStack($homeURL);
-                $this->setCookie();
+            if ($mainpageURL == $currentURL) {
+                $this->addURLToStack($mainpageURL);
+                $this->writeCookie();
                 return;
             }
 
-            $this->addURLToStack($homeURL);
-            $this->addURLToStack($this->getCurrentURL());
-            $this->setCookie();
+            $this->addURLToStack($mainpageURL);
+            $this->addURLToStack($currentURL);
+            $this->writeCookie();
             return;
         }
 
         // navigated to the start - remove all urls: "restart" - no back button
-        if ($homeURL == $currentURL) {
-            $this->addURLToStack($homeURL);
-            $this->setCookie();
+        if ($mainpageURL == $currentURL) {
+            $this->addURLToStack($mainpageURL);
+            $this->writeCookie();
             return;
         }
 
         $this->savedURLs = $this->getUnserializedStackFromCookie();
         // back button has been used
-        if ($this->getSecondToTheLastSavedURL() == $this->getCurrentURL()) {
+        if ($this->getSecondToTheLastSavedURL() == $currentURL) {
             $this->removeLastURLFromStack();
-            $this->setCookie();
+            $this->writeCookie();
             return;
         }
 
         // new page has been entered
         if ($this->getLastURL() != $this->getCurrentURL()) {
             $this->addURLToStack($this->getCurrentURL());
-            $this->setCookie();
+            $this->writeCookie();
             return;
         }
     }
 
-    private function setCookie() {
-        setcookie('wpbackbutton', serialize($this->savedURLs));
+    private function writeCookie() {
+        writeCookie('wpbackbutton', serialize($this->savedURLs));
     }
 
-    private function addURLToStack($elem) {
-        array_push($this->savedURLs, $elem);
+    private function addURLToStack($URL) {
+        array_push($this->savedURLs, $URL);
     }
 
     private function removeLastURLFromStack() {
@@ -104,10 +104,9 @@ class WP_back_button {
     }
 
     private function init_plugin_constants() {
-        // This is what shows in the Widgets area of WordPress.
+        // This is what shows in the Widgets area of WordPress
         define( 'PLUGIN_NAME', self::name );
-        /* This is the slug of your plugin used in initializing it with the WordPress API and should
-           also be the directory in which your plugin resides. */
+        // WP initializing slug directory in which the plugin resides
         define( 'PLUGIN_SLUG', self::slug );
     }
 
@@ -116,7 +115,6 @@ class WP_back_button {
         add_shortcode('renderBackButton', array($this, 'wpbackbutton_shortcode'));
     }
 
-    // Returns nothing if no backbutton needed, else the backbutton
     function wpbackbutton_shortcode() {
         if ($this->getSecondToTheLastSavedURL()) {
             return '<a class="wpbackbutton" href="' . $this->getSecondToTheLastSavedURL() . '">BACK</a>';
