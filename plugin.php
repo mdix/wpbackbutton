@@ -64,6 +64,9 @@ class WP_back_button {
     }
 
     private function addURLToStack($URL) {
+        if (!is_array($this->savedURLs)) {
+            return;
+        }
         array_push($this->savedURLs, $URL);
     }
 
@@ -95,10 +98,16 @@ class WP_back_button {
     }
 
     private function getLastURL() {
+        if (!is_array($this->savedURLs)) {
+            return;
+        }
         return end($this->savedURLs);
     }
 
     private function getSecondToTheLastSavedURL() {
+        if (!is_array($this->savedURLs)) {
+            return;
+        }
         end($this->savedURLs);
         return prev($this->savedURLs);
     }
