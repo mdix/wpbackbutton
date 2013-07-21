@@ -39,6 +39,9 @@ A -> B -> C -> D -> A would clear the history (mainpage has no back button)
 
 I suppose that it's no good idea to add the button into a loop, because you'd have it below every post. Instead you should add it directly after / before the loop, so it's displayed once or twice (above and below the content). This typically takes place in the single.php / page.php / category.php / ... files of your template (wherever a loop gets executed).
 
+= How can I style the button? =
+You can target the Button via CSS by using the class '.wpbackbutton' in your CSS file.
+
 == Screenshots ==
 
 == Changelog ==
